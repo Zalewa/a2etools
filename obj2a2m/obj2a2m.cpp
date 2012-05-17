@@ -94,8 +94,8 @@ bool load_obj_data(bool collision_obj, const char* filename, vector<float3*>* ve
 	bool set_word = false;
 	
 	// read and store obj data
-	file_io f;
-	if(!f.open_file(filename, file_io::OT_READ_BINARY)) {
+	file_io f(filename, file_io::OT_READ_BINARY);
+	if(!f.is_open()) {
 		a2e_error("couldn't open obj file \"%s\"!", filename);
 		return false;
 	}
@@ -103,7 +103,7 @@ bool load_obj_data(bool collision_obj, const char* filename, vector<float3*>* ve
 	stringstream buffer(stringstream::in | stringstream::out);
 	core::reset(&buffer);
 	f.read_file(&buffer);
-	f.close_file();
+	f.close();
 	
 	buffer.seekp(0);
 	buffer.seekg(0);
@@ -312,7 +312,7 @@ void create_mat_mapping() {
 	
 	// create and write mapping
 	string mapping_fname = string(a2m_filename) + ".mapping.txt";
-	if(!f.open_file(mapping_fname.c_str(), file_io::OT_WRITE)) {
+	if(!f.open(mapping_fname.c_str(), file_io::OT_WRITE)) {
 		return;
 	}
 	
@@ -328,7 +328,7 @@ void create_mat_mapping() {
 	}
 	file << "\t</material_mapping>" << endl;
 	
-	f.close_file();
+	f.close();
 }
 
 struct s_cmp_coord {
@@ -594,7 +594,7 @@ int main(int argc, char *argv[]) {
 		string debug_obj = string(a2m_filename).substr(0, strlen(a2m_filename)-3) + "obj";
 		a2e_debug("saving to %s ...", debug_obj.c_str());
 		
-		if(!f.open_file(debug_obj.c_str(), file_io::OT_WRITE_BINARY)) {
+		if(!f.open(debug_obj.c_str(), file_io::OT_WRITE_BINARY)) {
 			a2e_error("couldn't open/write obj file \"%s\"!", debug_obj.c_str());
 			return -1;
 		}
@@ -635,7 +635,7 @@ int main(int argc, char *argv[]) {
 		}
 		*fs << endl;
 		
-		f.close_file();
+		f.close();
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -651,7 +651,7 @@ int main(int argc, char *argv[]) {
 	// convert obj data to a2m, save a2m
 	if(!to_obj) {
 		a2e_debug("saving a2m ...");
-		if(!f.open_file(a2m_filename, file_io::OT_WRITE_BINARY)) {
+		if(!f.open(a2m_filename, file_io::OT_WRITE_BINARY)) {
 			a2e_error("couldn't open/write a2m file \"%s\"!", a2m_filename);
 			return -1;
 		}
@@ -726,7 +726,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		
-		f.close_file();
+		f.close();
 	}
 	
 	//
