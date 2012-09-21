@@ -164,3 +164,32 @@ project "obj2a2m"
 		if(not os.is("windows") or win_unixenv) then
 			buildoptions { "-ffast-math -Os" }
 		end
+
+project "kernelcacher"
+	targetname "kernelcacher"
+	kind "ConsoleApp"
+	language "C++"
+	files { "kernelcacher/**.h", "kernelcacher/**.cpp" }
+	targetdir "bin"
+	
+	-- the same for all
+	includedirs { "kernelcacher/" }
+	
+	-- configs
+	configuration "Debug"
+		targetname "kernelcacherd"
+		defines { "DEBUG", "A2E_DEBUG", "A2E_CUDA_CL" }
+		flags { "Symbols" }
+		links { "a2elightd", "z", "SDL2" }
+		if(not os.is("windows") or win_unixenv) then
+			buildoptions { " -gdwarf-2" }
+		end
+
+	configuration "Release"
+		targetname "kernelcacher"
+		defines { "NDEBUG", "A2E_CUDA_CL" }
+		flags { "Optimize" }
+		links { "a2elight", "z", "SDL2" }
+		if(not os.is("windows") or win_unixenv) then
+			buildoptions { "-ffast-math -Os" }
+		end

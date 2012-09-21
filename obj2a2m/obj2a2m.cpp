@@ -133,7 +133,7 @@ bool load_obj_data(bool collision_obj, const char* filename, vector<float3*>* ve
 			buffer >> val1;
 			buffer >> val2;
 			
-			// some .obj files use uvw texture coordinates instead of uv coordinates, do a check at the first occurence of vt
+			// some .obj files use uvw texture coordinates instead of uv coordinates, do a check at the first occurrence of vt
 			if(!init_uvw_check) {
 				string next_val = buffer.str().substr(1 + buffer.tellg(), 4);
 				if(!is_number(next_val)) {
