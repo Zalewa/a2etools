@@ -164,7 +164,7 @@ solution "a2etools"
 				linkoptions { "-lrt -lc -lstdcxx" }
 			end
 		elseif(mingw and not clang_libcxx) then
-			linkoptions { "`sdl2-config --libs`" }
+			linkoptions { "`sdl2-config --libs | sed -E 's/(-mwindows)//g'`" }
 		end
 
 		if(gcc_compat) then
