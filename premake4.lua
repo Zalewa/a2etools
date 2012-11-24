@@ -163,6 +163,8 @@ solution "a2etools"
 				-- small linux workaround for now (linking will fail otherwise):
 				linkoptions { "-lrt -lc -lstdcxx" }
 			end
+		elseif(mingw and not clang_libcxx) then
+			linkoptions { `sdl2-config --libs` }
 		end
 
 		if(gcc_compat) then
