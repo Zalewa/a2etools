@@ -6,13 +6,24 @@ A2ETOOLS_MAKE="make"
 A2ETOOLS_MAKE_PLATFORM="32"
 A2ETOOLS_ARGS=""
 A2ETOOLS_CPU_COUNT=1
-A2ETOOLS_USE_CLANG=0
+A2ETOOLS_USE_CLANG=1
 
-if [[ $# > 0 && $1 == "gcc" ]]; then
-	A2ETOOLS_ARGS="--gcc"
-else
-	A2ETOOLS_ARGS="--clang"
-	A2ETOOLS_USE_CLANG=1
+for arg in "$@"; do
+	case $arg in
+		"gcc")
+			A2ETOOLS_ARGS+=" --gcc"
+			A2ETOOLS_USE_CLANG=0
+			;;
+		"cuda")
+			A2ETOOLS_USE_CLANG+=" --cuda"
+			;;
+		*)
+			;;
+	esac
+done
+
+if [[ $A2ETOOLS_USE_CLANG == 1 ]]; then
+	A2ETOOLS_ARGS+=" --clang"
 fi
 
 case $( uname | tr [:upper:] [:lower:] ) in
@@ -23,6 +34,9 @@ case $( uname | tr [:upper:] [:lower:] ) in
 	"linux")
 		A2ETOOLS_OS="linux"
 		A2ETOOLS_CPU_COUNT=$(cat /proc/cpuinfo | grep -m 1 'cpu cores' | sed -E 's/.*(: )([:digit:]*)/\2/g')
+		if [[ $(cat /proc/cpuinfo | grep -m 1 "flags.* ht " | wc -l) == 1 ]]; then
+			A2ETOOLS_CPU_COUNT=$(expr ${A2ETOOLS_CPU_COUNT} + ${A2ETOOLS_CPU_COUNT})
+		fi
 		;;
 	[a-z0-9]*"BSD")
 		A2ETOOLS_OS="bsd"
