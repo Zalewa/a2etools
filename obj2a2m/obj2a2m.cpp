@@ -94,14 +94,14 @@ bool load_obj_data(bool collision_obj, const char* filename, vector<float3*>* ve
 	bool set_word = false;
 	
 	// read and store obj data
-	file_io f(filename, file_io::OT_READ_BINARY);
+	file_io f(filename, file_io::OPEN_TYPE::READ_BINARY);
 	if(!f.is_open()) {
 		a2e_error("couldn't open obj file \"%s\"!", filename);
 		return false;
 	}
 	
 	stringstream buffer(stringstream::in | stringstream::out);
-	core::reset(&buffer);
+	core::reset(buffer);
 	f.read_file(&buffer);
 	f.close();
 	
@@ -312,7 +312,7 @@ void create_mat_mapping() {
 	
 	// create and write mapping
 	string mapping_fname = string(a2m_filename) + ".mapping.txt";
-	if(!f.open(mapping_fname.c_str(), file_io::OT_WRITE)) {
+	if(!f.open(mapping_fname.c_str(), file_io::OPEN_TYPE::WRITE)) {
 		return;
 	}
 	
@@ -522,7 +522,7 @@ int main(int argc, char *argv[]) {
 	a2e_debug("removing duplicate vertices ...");
 	float3* equal_vert;
 	float3* cur_vert;
-	map<float3*, float3*> replace_vertices;
+	unordered_map<float3*, float3*> replace_vertices;
 	for(unsigned int i = 0; i < object_count; i++) {
 		unsigned int j = 0;
 		unsigned int vertices_size = sub_objects[i].vertices.size() - 1; // -1, b/c a vertex is always compared with the next one (-> not needed by the last)
@@ -546,7 +546,7 @@ int main(int argc, char *argv[]) {
 		a2e_debug("in sub-object #%u ...", i);
 		unsigned int fcnt = 0;
 		for(vector<face*>::iterator fiter = sub_objects[i].faces.begin(); fiter != sub_objects[i].faces.end(); fiter++) {
-			for(map<float3*, float3*>::iterator rv_iter = replace_vertices.begin(); rv_iter != replace_vertices.end(); rv_iter++) {
+			for(unordered_map<float3*, float3*>::const_iterator rv_iter = replace_vertices.cbegin(); rv_iter != replace_vertices.cend(); rv_iter++) {
 				if((*fiter)->vertices[0] == rv_iter->first) (*fiter)->vertices[0] = rv_iter->second;
 				if((*fiter)->vertices[1] == rv_iter->first) (*fiter)->vertices[1] = rv_iter->second;
 				if((*fiter)->vertices[2] == rv_iter->first) (*fiter)->vertices[2] = rv_iter->second;
@@ -594,7 +594,7 @@ int main(int argc, char *argv[]) {
 		string debug_obj = string(a2m_filename).substr(0, strlen(a2m_filename)-3) + "obj";
 		a2e_debug("saving to %s ...", debug_obj.c_str());
 		
-		if(!f.open(debug_obj.c_str(), file_io::OT_WRITE_BINARY)) {
+		if(!f.open(debug_obj.c_str(), file_io::OPEN_TYPE::WRITE_BINARY)) {
 			a2e_error("couldn't open/write obj file \"%s\"!", debug_obj.c_str());
 			return -1;
 		}
@@ -651,7 +651,7 @@ int main(int argc, char *argv[]) {
 	// convert obj data to a2m, save a2m
 	if(!to_obj) {
 		a2e_debug("saving a2m ...");
-		if(!f.open(a2m_filename, file_io::OT_WRITE_BINARY)) {
+		if(!f.open(a2m_filename, file_io::OPEN_TYPE::WRITE_BINARY)) {
 			a2e_error("couldn't open/write a2m file \"%s\"!", a2m_filename);
 			return -1;
 		}
